@@ -8,12 +8,16 @@ def main():
     inp_handler = InputHandler()
 
     keep_looping = True
-    def esc_main(flag): flag = False
-    def set_col_detec(val): col_detector.keep_running = val
-    inp_handler.attach_func_to_keypress(Key.enter, set_col_detec(True))
-    inp_handler.attach_func_to_keypress(Key.esc, set_col_detec(False))
-    inp_handler.attach_func_to_keypress('q', esc_main(keep_looping))
 
+    def esc_main():
+        nonlocal keep_looping
+        keep_looping = False
+
+    def switch_col_detec(): col_detector.keep_running = not col_detector.keep_running
+    inp_handler.attach_func_to_keypress(Key.enter, switch_col_detec)
+    inp_handler.attach_func_to_keypress(Key.esc, esc_main)
+
+    # use while loop to keep it active and looping
     while keep_looping:
         pass
 
