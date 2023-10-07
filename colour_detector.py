@@ -1,5 +1,7 @@
 # create class to detect a certain colour from image and return coordinates
-import asyncio
+#import asyncio
+import threading
+import time
 
 
 class ColourDetector:
@@ -8,6 +10,16 @@ class ColourDetector:
         self.received_image = None
         # for checking whether to keep running or to stop
         self._keep_running = False
+
+        self._thread = threading.Thread(target=self._run(), name="COLOUR_DETECT")
+        self._thread.setName("COLOUR_DETECT")
+        self._thread.setDaemon(True)
+
+        self._keep_running = threading.local()
+
+        print(threading.active_count())
+        print(threading.current_thread())
+        print(threading.enumerate())
 
     # the property is public whereas the variable is private otherwise the setter will cause an infinite loop
     @property
@@ -20,10 +32,10 @@ class ColourDetector:
         self._keep_running = value
         if value:
             print("run loop started")
-            asyncio.run(self._run())
+            self._thread.start()
         else:
             print("run loop stopped")
-            asyncio.get_event_loop().stop()
+            self._thread.join()
 
 
     # ProcessImage shouldn't be async as otherwise it might return variables with no value
@@ -35,11 +47,11 @@ class ColourDetector:
 
     # should not be called from outside the class as its private, the program should only change the keep_running
     # value and whenever that is changed _run will run if true and cancel if false
-    async def _run(self):
+    def _run(self):
         print("a")
         while self._keep_running:
             print("is looping")
             if self.received_image:
                 # get colour maps and return the values
                 colour_maps = self.process_image()
-            await asyncio.sleep(1)
+            time.sleep(1)

@@ -1,46 +1,24 @@
-import asyncio
-
-import keyboard
+import threading
+from pynput.keyboard import Key, Listener
 
 
 class InputHandler:
     def __init__(self):
         # public dictionary of commands that each key press will have
         self.commands = dict()
-        self.recent_key = None
 
-        self._keep_running = False
-
-        self._loop = asyncio.get_event_loop()
-
-    @property
-    def keep_running(self):
-        return self._keep_running
-
-    @keep_running.setter
-    def keep_running(self, value):
-        self._keep_running = value
-        if value:
-            self._loop.create_task(self.check_for_inputs())
-            #self._loop.run_until_complete(asyncio.ensure_future(self.check_for_inputs()))
-        if not value:
-            self._loop.stop()
-
-    async def check_for_inputs(self):
-        while self._keep_running:
-            for key_check in self.commands.keys():
-                if keyboard.is_pressed(key_check): self._process_inputs(key_check)
-            await asyncio.sleep(1)
+        self._key_listener = Listener(on_press=self._process_inputs)
+        self._key_listener.start()
+        print(threading.active_count())
+        print(threading.current_thread())
 
     def _process_inputs(self, key):
+        print(key, "pressed")
         try:
             for command in self.commands[key]:
+                print(command.__name__)
                 command()
         except: pass
-        self.recent_key = key
-
-        print(key, "pressed")
-        print(self.commands)
 
     def attach_func_to_keypress(self, key, func):
         # add space to the values and reassign the last value to the function
