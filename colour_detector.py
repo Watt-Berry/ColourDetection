@@ -1,5 +1,5 @@
 # create class to detect a certain colour from image and return coordinates
-#import asyncio
+import asyncio
 import threading
 import time
 
@@ -7,51 +7,27 @@ import time
 class ColourDetector:
     def __init__(self):
         # public so any outside code should be able to add an image to it
-        self.received_image = None
-        # for checking whether to keep running or to stop
-        self._keep_running = False
+        self._received_image = None
+        self._loop_i = 1
 
-        self._thread = threading.Thread(target=self._run(), name="COLOUR_DETECT")
-        self._thread.setName("COLOUR_DETECT")
-        self._thread.setDaemon(True)
-
-        self._keep_running = threading.local()
-
-        print(threading.active_count())
-        print(threading.current_thread())
-        print(threading.enumerate())
-
-    # the property is public whereas the variable is private otherwise the setter will cause an infinite loop
+    # make the received_image variable a property
     @property
-    def keep_running(self):
-        return self._keep_running
+    def image_to_process(self):
+        return self._received_image
 
-    # call the _run method when keep_running is set to true and cancel when false
-    @keep_running.setter
-    def keep_running(self, value: bool):
-        self._keep_running = value
-        if value:
-            print("run loop started")
-            self._thread.start()
-        else:
-            print("run loop stopped")
-            self._thread.join()
+    # add a 'listener' to the variable so that whenever a new image is passed it gets immediately processed and any
+    # values are returned
+    @image_to_process.setter
+    def image_to_process(self, value: int):
+        self._received_image = value
+        print(self._loop_i)
+        self._loop_i += 1
 
+        self._process_image()
 
     # ProcessImage shouldn't be async as otherwise it might return variables with no value
     # should return maps of the image outlining each specific colour
-    def process_image(self) -> None:
+    def _process_image(self) -> None:
         # get colour maps
-        self.received_image = None
-        return None
-
-    # should not be called from outside the class as its private, the program should only change the keep_running
-    # value and whenever that is changed _run will run if true and cancel if false
-    def _run(self):
-        print("a")
-        while self._keep_running:
-            print("is looping")
-            if self.received_image:
-                # get colour maps and return the values
-                colour_maps = self.process_image()
-            time.sleep(1)
+        self._received_image = None
+        print("processed image")

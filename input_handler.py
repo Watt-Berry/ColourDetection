@@ -1,5 +1,5 @@
 import threading
-from pynput.keyboard import Key, Listener
+from pynput.keyboard import Listener
 
 
 class InputHandler:
