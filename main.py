@@ -2,12 +2,14 @@ import asyncio
 import threading
 import time
 
+from camera import Camera
 from colour_detector import ColourDetector
 from input_handler import InputHandler
 from pynput.keyboard import Key
 
 
 def main():
+    camera = Camera()
     inp_handler = InputHandler()
     col_detector = ColourDetector()
     image = 0
