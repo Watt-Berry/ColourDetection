@@ -1,7 +1,7 @@
 import cv2
 
 
-class Camera():
+class Camera:
     def __init__(self):
         cv2.namedWindow("preview")
         vc = cv2.VideoCapture(0)
