@@ -17,23 +17,25 @@ def main():
     new_img = None
     while keep_looping:
         inp = input("enter command > ")
-        if inp == "ei": # enter image
+        if inp == "ei":  # enter image
             pass_image_to_color_detec("test.jpg")
-        elif inp == "esc": # escape
+        elif inp == "esc":  # escape
             keep_looping = False
-        elif inp == "red": # red channel
+        elif inp == "red":  # red channel
             new_img = col_detector.red_channel
-        elif inp == "blue": # blue channel
+        elif inp == "blue":  # blue channel
             new_img = col_detector.blue_channel
-        elif inp == "green": # green channel
+        elif inp == "green":  # green channel
             new_img = col_detector.green_channel
         elif inp == "green2":
             col_detector.display_image(channel="GREEN")
-        elif inp == "base": # base channel
+        elif inp == "orange":
+            new_img = col_detector.orange_channel
+        elif inp == "base":  # base channel
             new_img = col_detector.base_channel
         elif inp == "black" or inp == "white":
             new_img = col_detector.grayscale_channel
-        elif inp == "show": # show image
+        elif inp == "show":  # show image
             col_detector.display_image(image=new_img)
 
         # test if gotten image

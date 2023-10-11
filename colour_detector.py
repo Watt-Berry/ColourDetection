@@ -3,6 +3,7 @@ import asyncio
 import threading
 import time
 import cv2
+import numpy
 
 
 class ColourDetector:
@@ -12,8 +13,11 @@ class ColourDetector:
         self._rgb_image = None
         self._grayscale_image = None
         # private
+        # TODO: add in orange or yellow channel
+        # TODO: add in option to calibrate colours somehow?
+        # TODO: convert from taking input to taking a video-source so it can continuously track on its own
         self._colour_channels = {"BASE": None,
-                                 "RED": None, "GREEN": None, "BLUE": None,
+                                 "RED": None, "GREEN": None, "BLUE": None, "ORANGE": None,
                                  "GRAYSCALE": None}
 
     # make the received_image variable a property
@@ -52,6 +56,10 @@ class ColourDetector:
         return self.colour_channels["BLUE"]
 
     @property
+    def orange_channel(self):
+        return self.colour_channels["ORANGE"]
+
+    @property
     def grayscale_channel(self):
         return self.colour_channels["GRAYSCALE"]
 
@@ -73,12 +81,17 @@ class ColourDetector:
         blue_only[:, :, 1] = 0
         blue_only[:, :, 2] = 0
 
+        orange_only = self._rgb_image.copy()
+        # set blue channel to 0 as red + green = orange
+        orange_only[:, :, 0] = 0
+
         # set colour maps
         self._colour_channels["GRAYSCALE"] = self._grayscale_image
         self._colour_channels["BASE"] = self._rgb_image
         self._colour_channels["RED"] = red_only
         self._colour_channels["GREEN"] = green_only
         self._colour_channels["BLUE"] = blue_only
+        self._colour_channels["ORANGE"] = orange_only
 
         # set the image to None just in case it may cause errors with newly passing images
         self._received_image = None
@@ -89,8 +102,10 @@ class ColourDetector:
     def display_image(self, *, image=None, channel=None):
         if not (image is None):
             cv2.imshow("image", image)
+            print(image.cols)
         elif not (channel is None):
             cv2.imshow(channel, self.colour_channels[channel])
+            print(self.colour_channels[channel].cols)
         else:
             print("no image or channel supplied")
             return
