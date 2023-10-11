@@ -8,6 +8,9 @@ import numpy
 
 class ColourDetector:
     def __init__(self):
+        # private video source, should pass in the source form the Video class
+        self._video_source = None
+
         # private but the image to process property is a public variable that returns this value,
         # used to prevent any outside code from directly altering the value
         self._rgb_image = None
@@ -19,6 +22,14 @@ class ColourDetector:
         self._colour_channels = {"BASE": None,
                                  "RED": None, "GREEN": None, "BLUE": None, "ORANGE": None,
                                  "GRAYSCALE": None}
+
+    @property
+    def video_source(self):
+        return self._video_source
+
+    @video_source.setter
+    def video_source(self, source):
+        self._video_source = source
 
     # make the received_image variable a property
     @property
