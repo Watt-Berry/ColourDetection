@@ -8,104 +8,103 @@ import numpy
 
 class ColourDetector:
     def __init__(self):
-        # private video source, should pass in the source form the Video class
-        self._video_source = None
+        # private video frame, should pass from the Video class
+        self._video_frame = None
 
-        # private but the image to process property is a public variable that returns this value,
-        # used to prevent any outside code from directly altering the value
-        self._rgb_image = None
-        self._grayscale_image = None
         # private
         # TODO: add in orange or yellow channel
         # TODO: add in option to calibrate colours somehow?
-        # TODO: convert from taking input to taking a video-source so it can continuously track on its own
-        self._colour_channels = {"BASE": None,
-                                 "RED": None, "GREEN": None, "BLUE": None, "ORANGE": None,
-                                 "GRAYSCALE": None}
+        # each value will have the result and the mask
+        self._colour_channels = {"BASE": [],
+                                 "RED": [], "GREEN": [], "BLUE": [], "ORANGE": [],
+                                 "GRAYSCALE": []}
 
     @property
-    def video_source(self):
-        return self._video_source
+    def current_frame(self):
+        return self._video_frame
 
-    @video_source.setter
-    def video_source(self, source):
-        self._video_source = source
-
-    # make the received_image variable a property
-    @property
-    def image_to_process(self):
-        return self._rgb_image or self._grayscale_image
-
-    # add a 'listener' to the variable so that whenever a new image is passed it gets immediately processed and any
-    # values are returned
-    @image_to_process.setter
-    def image_to_process(self, path: str):
-        self._rgb_image = cv2.imread(path, flags=cv2.IMREAD_REDUCED_COLOR_2)
-        self._grayscale_image = cv2.imread(path, flags=cv2.IMREAD_REDUCED_GRAYSCALE_2)
-        self._process_image()
+    # listener for frames to be passed
+    @current_frame.setter
+    def current_frame(self, frame):
+        if not (frame is None):
+            self._video_frame = frame
+            self._process_frame()
+        return
 
     # public properties to return the private values
     @property
     def colour_channels(self):
-        return self._colour_channels
+        return self._colour_channels.keys()
 
     @property
     def base_channel(self):
         # the specific channels refer to the public colour_channels property instead?? unsure if needed
-        return self.colour_channels["BASE"]
+        return self._colour_channels["BASE"]
 
     @property
     def red_channel(self):
-        return self.colour_channels["RED"]
+        return self._colour_channels["RED"]
 
     @property
     def green_channel(self):
-        return self.colour_channels["GREEN"]
+        return self._colour_channels["GREEN"]
 
     @property
     def blue_channel(self):
-        return self.colour_channels["BLUE"]
+        return self._colour_channels["BLUE"]
 
     @property
     def orange_channel(self):
-        return self.colour_channels["ORANGE"]
+        return self._colour_channels["ORANGE"]
 
     @property
     def grayscale_channel(self):
-        return self.colour_channels["GRAYSCALE"]
+        return self._colour_channels["GRAYSCALE"]
 
     # ProcessImage shouldn't be async as otherwise it might return variables with no value
-    def _process_image(self) -> None:
-        red_only = self._rgb_image.copy()
-        # blue channel = [:, :, 0] green channel = [:, :, 1] red channel = [:, :, 2]
-        # set blue and green channels to 0
-        red_only[:, :, 0] = 0
-        red_only[:, :, 1] = 0
+    def _process_frame(self) -> None:
+        # self._video_frame is already an image so just need to copy and convert to colour channels
+        # don't need to imread the frame as it's already an image
 
-        green_only = self._rgb_image.copy()
-        # set blue and red channels to 0
-        green_only[:, :, 0] = 0
-        green_only[:, :, 2] = 0
+        # convert the image to hsv
+        hsv_image = cv2.cvtColor(self._video_frame, cv2.COLOR_BGR2HSV)
 
-        blue_only = self._rgb_image.copy()
-        # set green and red channels to 0
-        blue_only[:, :, 1] = 0
-        blue_only[:, :, 2] = 0
+        # for each colour:
+        # get the bound for each colour by converting rgb values to hsv
+        # upper bound = val + 10, lower bound = val - 10
+        # to get bounds of a colour:
+            # >>> green = np.uint8([[[0,255,0 ]]])
+            # >>> hsv_green = cv.cvtColor(green,cv.COLOR_BGR2HSV)
+            # >>> print( hsv_green )
 
-        orange_only = self._rgb_image.copy()
-        # set blue channel to 0 as red + green = orange
-        orange_only[:, :, 0] = 0
+        # create a mask for the wanted colour
+        # get the result from the frame and the mask
+        # set the result to the dictionary
+        # colour array = [blue, green, red]
 
-        # set colour maps
-        self._colour_channels["GRAYSCALE"] = self._grayscale_image
-        self._colour_channels["BASE"] = self._rgb_image
-        self._colour_channels["RED"] = red_only
-        self._colour_channels["GREEN"] = green_only
-        self._colour_channels["BLUE"] = blue_only
-        self._colour_channels["ORANGE"] = orange_only
+        lower_blue = numpy.array([110, 50, 50])
+        upper_blue = numpy.array([130, 255, 255])
+        blue_mask = cv2.inRange(hsv_image, lower_blue, upper_blue)
+        # bitwise_and takes 2 images as src1 and src2 incase one of them is invalid?
+        self._colour_channels["BLUE"] = [cv2.bitwise_and(self._video_frame, self._video_frame, mask=blue_mask), blue_mask]
 
-        # set the image to None just in case it may cause errors with newly passing images
-        self._received_image = None
+        lower_green = numpy.array([50, 50, 50])
+        upper_green = numpy.array([70, 255, 255])
+        green_mask = cv2.inRange(hsv_image, lower_green, upper_green)
+        self._colour_channels["GREEN"] = [cv2.bitwise_and(self._video_frame, self._video_frame, mask=green_mask), green_mask]
+
+        lower_red = numpy.array([0, 50, 50])
+        upper_red = numpy.array([10, 255, 255])
+        red_mask = cv2.inRange(hsv_image, lower_red, upper_red)
+        self._colour_channels["RED"] = [cv2.bitwise_and(self._video_frame, self._video_frame, mask=red_mask), red_mask]
+
+        lower_black = numpy.array([0, 0, 0])
+        upper_black = numpy.array([10, 10, 10])
+        black_mask = cv2.inRange(hsv_image, lower_black, upper_black)
+        self._colour_channels["GRAYSCALE"] = [cv2.bitwise_and(self._video_frame, self._video_frame, mask=black_mask), black_mask]
+
+
+        self._colour_channels["BASE"] = [hsv_image, hsv_image]
 
     # public
     # the * makes it so that whenever the function is called, the parameter name has to be specified as well
@@ -113,10 +112,9 @@ class ColourDetector:
     def display_image(self, *, image=None, channel=None):
         if not (image is None):
             cv2.imshow("image", image)
-            print(image.cols)
         elif not (channel is None):
-            cv2.imshow(channel, self.colour_channels[channel])
-            print(self.colour_channels[channel].cols)
+            cv2.imshow(channel, self._colour_channels[channel][0])
+            cv2.imshow(channel + "mask", self._colour_channels[channel][1])
         else:
             print("no image or channel supplied")
             return
