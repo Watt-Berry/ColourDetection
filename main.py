@@ -6,6 +6,7 @@ from video import Video
 
 def main():
     current_video = Video()
+    current_video.start()
     col_detector = ColourDetector()
     print(col_detector.colour_channels)
     keep_looping = True
@@ -26,6 +27,8 @@ def main():
         except:
             if inp == "esc":
                 keep_looping = False
+
+    current_video.end()
 
 
 if __name__ == '__main__':

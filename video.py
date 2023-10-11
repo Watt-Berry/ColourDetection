@@ -3,7 +3,14 @@ import cv2
 
 class Video:
     def __init__(self):
+        pass
+        self._video = None
+
+    def start(self):
         self._video = cv2.VideoCapture(0)
+
+    def end(self):
+        self._video.release()
 
     @property
     def frame(self):
