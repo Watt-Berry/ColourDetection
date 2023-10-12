@@ -72,7 +72,7 @@ class ColourDetector:
         # for each colour:
         # get the bound for each colour by converting rgb values to hsv
         # upper bound = val + 10, lower bound = val - 10
-        # to get bounds of a colour:
+        # to get bounds of a colour example:
             # >>> green = np.uint8([[[0,255,0 ]]])
             # >>> hsv_green = cv.cvtColor(green,cv.COLOR_BGR2HSV)
             # >>> print( hsv_green )
@@ -80,20 +80,20 @@ class ColourDetector:
         # create a mask for the wanted colour
         # get the result from the frame and the mask
         # set the result to the dictionary
-        # colour array = [blue, green, red]
+        # bgr colour array = [blue, green, red]
 
-        lower_blue = numpy.array([110, 50, 50])
+        lower_blue = numpy.array([110, 50, 40])
         upper_blue = numpy.array([130, 255, 255])
         blue_mask = cv2.inRange(hsv_image, lower_blue, upper_blue)
         # bitwise_and takes 2 images as src1 and src2 incase one of them is invalid?
         self._colour_channels["BLUE"] = [cv2.bitwise_and(self._video_frame, self._video_frame, mask=blue_mask), blue_mask]
 
-        lower_green = numpy.array([50, 50, 50])
+        lower_green = numpy.array([50, 50, 40])
         upper_green = numpy.array([70, 255, 255])
         green_mask = cv2.inRange(hsv_image, lower_green, upper_green)
         self._colour_channels["GREEN"] = [cv2.bitwise_and(self._video_frame, self._video_frame, mask=green_mask), green_mask]
 
-        lower_red = numpy.array([0, 50, 50])
+        lower_red = numpy.array([0, 50, 40])
         upper_red = numpy.array([10, 255, 255])
         red_mask = cv2.inRange(hsv_image, lower_red, upper_red)
         self._colour_channels["RED"] = [cv2.bitwise_and(self._video_frame, self._video_frame, mask=red_mask), red_mask]
