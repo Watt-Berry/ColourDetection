@@ -67,8 +67,8 @@ class ColourDetector:
         # don't need to imread the frame as it's already an image
 
         # convert the image to hsv
-        #hsv_image = cv2.cvtColor(self._video_frame, cv2.COLOR_BGR2HSV)
-        image = self._video_frame
+        hsv_image = cv2.cvtColor(self._video_frame, cv2.COLOR_BGR2HSV)
+        #image = self._video_frame
 
         # for each colour:
         # get the bound for each colour by converting rgb values to hsv
@@ -83,28 +83,28 @@ class ColourDetector:
         # set the result to the dictionary
         # bgr colour array = [blue, green, red]
 
-        lower_blue = numpy.array([50, 0, 0])
-        upper_blue = numpy.array([255, 0, 0])
-        blue_mask = cv2.inRange(image, lower_blue, upper_blue)
+        lower_blue = numpy.array([110, 100, 100])
+        upper_blue = numpy.array([130, 255, 255])
+        blue_mask = cv2.inRange(hsv_image, lower_blue, upper_blue)
         # bitwise_and takes 2 images as src1 and src2 incase one of them is invalid?
-        self._colour_channels["BLUE"] = [cv2.bitwise_and(image, image, mask=blue_mask), blue_mask]
+        self._colour_channels["BLUE"] = [cv2.bitwise_and(hsv_image, hsv_image, mask=blue_mask), blue_mask]
 
-        lower_green = numpy.array([0, 50, 0])
-        upper_green = numpy.array([0, 255, 0])
-        green_mask = cv2.inRange(image, lower_green, upper_green)
-        self._colour_channels["GREEN"] = [cv2.bitwise_and(image, image, mask=green_mask), green_mask]
+        lower_green = numpy.array([50, 100, 100])
+        upper_green = numpy.array([70, 255, 255])
+        green_mask = cv2.inRange(hsv_image, lower_green, upper_green)
+        self._colour_channels["GREEN"] = [cv2.bitwise_and(hsv_image, hsv_image, mask=green_mask), green_mask]
 
-        lower_red = numpy.array([0, 0, 50])
-        upper_red = numpy.array([0, 0, 255])
-        red_mask = cv2.inRange(image, lower_red, upper_red)
-        self._colour_channels["RED"] = [cv2.bitwise_and(image, image, mask=red_mask), red_mask]
+        lower_red = numpy.array([0, 100, 100])
+        upper_red = numpy.array([20, 255, 255])
+        red_mask = cv2.inRange(hsv_image, lower_red, upper_red)
+        self._colour_channels["RED"] = [cv2.bitwise_and(hsv_image, hsv_image, mask=red_mask), red_mask]
 
-        lower_black = numpy.array([0, 0, 0])
-        upper_black = numpy.array([0, 0, 0])
-        black_mask = cv2.inRange(image, lower_black, upper_black)
-        self._colour_channels["GRAYSCALE"] = [cv2.bitwise_and(image, image, mask=black_mask), black_mask]
+        lower_black = numpy.array([0, 100, 100])
+        upper_black = numpy.array([0, 255, 255])
+        black_mask = cv2.inRange(hsv_image, lower_black, upper_black)
+        self._colour_channels["GRAYSCALE"] = [cv2.bitwise_and(hsv_image, hsv_image, mask=black_mask), black_mask]
 
-        self._colour_channels["BASE"] = [image, image]
+        self._colour_channels["BASE"] = [hsv_image, hsv_image]
 
     # public
     # the * makes it so that whenever the function is called, the parameter name has to be specified as well
