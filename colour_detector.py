@@ -67,8 +67,8 @@ class ColourDetector:
         # don't need to imread the frame as it's already an image
 
         # convert the image to hsv
+        #hsv_image = cv2.cvtColor(self._video_frame, cv2.COLOR_BGR2HSV)
         hsv_image = cv2.cvtColor(self._video_frame, cv2.COLOR_BGR2HSV)
-        #image = self._video_frame
 
         # for each colour:
         # get the bound for each colour by converting rgb values to hsv
@@ -83,20 +83,25 @@ class ColourDetector:
         # set the result to the dictionary
         # bgr colour array = [blue, green, red]
 
-        lower_blue = numpy.array([110, 100, 100])
-        upper_blue = numpy.array([130, 255, 255])
+        lower_blue = numpy.array([100, 100, 100])
+        upper_blue = numpy.array([140, 255, 255])
         blue_mask = cv2.inRange(hsv_image, lower_blue, upper_blue)
-        # bitwise_and takes 2 images as src1 and src2 incase one of them is invalid?
+        # bitwise_and takes 2 hsv_images as src1 and src2 incase one of them is invalid?
         self._colour_channels["BLUE"] = [cv2.bitwise_and(hsv_image, hsv_image, mask=blue_mask), blue_mask]
 
-        lower_green = numpy.array([50, 100, 100])
-        upper_green = numpy.array([70, 255, 255])
+        lower_green = numpy.array([40, 100, 100])
+        upper_green = numpy.array([80, 255, 255])
         green_mask = cv2.inRange(hsv_image, lower_green, upper_green)
         self._colour_channels["GREEN"] = [cv2.bitwise_and(hsv_image, hsv_image, mask=green_mask), green_mask]
 
-        lower_red = numpy.array([0, 100, 100])
-        upper_red = numpy.array([20, 255, 255])
-        red_mask = cv2.inRange(hsv_image, lower_red, upper_red)
+        lower_red1 = numpy.array([0, 100, 100])
+        upper_red1 = numpy.array([40, 255, 255])
+        lower_red_mask = cv2.inRange(hsv_image, lower_red1, upper_red1)
+        lower_red2 = numpy.array([160, 100, 100])
+        upper_red2 = numpy.array([179, 255, 255])
+        upper_red_mask = cv2.inRange(hsv_image, lower_red2, upper_red2)
+        # in hsv, the red color loops around so need 2 masks for the start and end
+        red_mask = lower_red_mask + upper_red_mask
         self._colour_channels["RED"] = [cv2.bitwise_and(hsv_image, hsv_image, mask=red_mask), red_mask]
 
         lower_black = numpy.array([0, 100, 100])
