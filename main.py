@@ -26,6 +26,7 @@ def main():
         i += 1
 
     current_video.end()
+    col_detector.end()
 
 
 if __name__ == '__main__':

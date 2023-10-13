@@ -102,3 +102,6 @@ class ColourDetector:
             # return
 
         cv2.waitKey(1)
+
+    def end(self):
+        cv2.destroyAllWindows()
