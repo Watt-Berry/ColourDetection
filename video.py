@@ -3,7 +3,6 @@ import cv2
 
 class Video:
     def __init__(self):
-        pass
         self._video = None
 
     def start(self):

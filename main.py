@@ -18,15 +18,12 @@ def main():
 
     # use while loop to keep it active and looping
     new_img = None
-    while keep_looping:
+    i = 0
+    while i < 2_000:
         pass_image_to_color_detec()
+        col_detector.display_image()
 
-        inp = input("enter command > ")
-        try:
-            col_detector.display_image(channel=inp.upper())
-        except:
-            if inp == "esc":
-                keep_looping = False
+        i += 1
 
     current_video.end()
 

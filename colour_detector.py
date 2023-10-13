@@ -36,38 +36,11 @@ class ColourDetector:
     def colour_channels(self):
         return self._colour_channels.keys()
 
-    @property
-    def base_channel(self):
-        # the specific channels refer to the public colour_channels property instead?? unsure if needed
-        return self._colour_channels["BASE"]
-
-    @property
-    def red_channel(self):
-        return self._colour_channels["RED"]
-
-    @property
-    def green_channel(self):
-        return self._colour_channels["GREEN"]
-
-    @property
-    def blue_channel(self):
-        return self._colour_channels["BLUE"]
-
-    @property
-    def orange_channel(self):
-        return self._colour_channels["ORANGE"]
-
-    @property
-    def grayscale_channel(self):
-        return self._colour_channels["GRAYSCALE"]
-
-    # ProcessImage shouldn't be async as otherwise it might return variables with no value
     def _process_frame(self) -> None:
         # self._video_frame is already an image so just need to copy and convert to colour channels
         # don't need to imread the frame as it's already an image
 
         # convert the image to hsv
-        #hsv_image = cv2.cvtColor(self._video_frame, cv2.COLOR_BGR2HSV)
         hsv_image = cv2.cvtColor(self._video_frame, cv2.COLOR_BGR2HSV)
 
         # for each colour:
@@ -97,17 +70,15 @@ class ColourDetector:
         lower_red1 = numpy.array([0, 100, 100])
         upper_red1 = numpy.array([40, 255, 255])
         lower_red_mask = cv2.inRange(hsv_image, lower_red1, upper_red1)
-        lower_red2 = numpy.array([160, 100, 100])
+        lower_red2 = numpy.array([160, 50, 0])
         upper_red2 = numpy.array([179, 255, 255])
         upper_red_mask = cv2.inRange(hsv_image, lower_red2, upper_red2)
         # in hsv, the red color loops around so need 2 masks for the start and end
         red_mask = lower_red_mask + upper_red_mask
         self._colour_channels["RED"] = [cv2.bitwise_and(hsv_image, hsv_image, mask=red_mask), red_mask]
 
-        lower_black = numpy.array([0, 100, 100])
-        upper_black = numpy.array([0, 255, 255])
-        black_mask = cv2.inRange(hsv_image, lower_black, upper_black)
-        self._colour_channels["GRAYSCALE"] = [cv2.bitwise_and(hsv_image, hsv_image, mask=black_mask), black_mask]
+        grayscale_image = cv2.cvtColor(self._video_frame, cv2.COLOR_BGR2GRAY)
+        self._colour_channels["GRAYSCALE"] = [grayscale_image, grayscale_image]
 
         self._colour_channels["BASE"] = [hsv_image, hsv_image]
 
@@ -121,7 +92,13 @@ class ColourDetector:
             cv2.imshow(channel, self._colour_channels[channel][0])
             cv2.imshow(channel + "mask", self._colour_channels[channel][1])
         else:
-            print("no image or channel supplied")
-            return
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+            cv2.imshow("base", self._colour_channels["BASE"][0])
+            cv2.imshow("red", self._colour_channels["RED"][0])
+            cv2.imshow("blue", self._colour_channels["BLUE"][0])
+            cv2.imshow("green", self._colour_channels["GREEN"][0])
+            #cv2.imshow("gray", self._colour_channels["GRAYSCALE"][0])
+
+            # print("no image or channel supplied")
+            # return
+
+        cv2.waitKey(1)
