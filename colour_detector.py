@@ -1,9 +1,8 @@
 # create class to detect a certain colour from image; and return coordinates?
-import asyncio
-import threading
-import time
 import cv2
 import numpy
+
+# TODO: add in option to calibrate colours somehow?
 
 
 class ColourDetector:
@@ -12,12 +11,43 @@ class ColourDetector:
         self._video_frame = None
 
         # private
-        # TODO: add in orange or yellow channel
-        # TODO: add in option to calibrate colours somehow?
         # each value will have the result and the mask
-        self._colour_channels = {"BASE": [],
-                                 "RED": [], "GREEN": [], "BLUE": [], "ORANGE": [],
-                                 "GRAYSCALE": []}
+        self._colour_channels = {"BASE": None, "HSV": None,
+                                 "RED": None, "GREEN": None, "BLUE": None, "YELLOW": None,
+                                 "GRAYSCALE": None}
+
+    # public properties to return the private values
+    @property
+    def colour_channels(self):
+        return self._colour_channels.keys()
+
+    @property
+    def base_channel(self):
+        return self._colour_channels["BASE"]
+
+    @property
+    def hsv_channel(self):
+        return self._colour_channels["HSV"]
+
+    @property
+    def red_channel(self):
+        return self._colour_channels["RED"]
+
+    @property
+    def green_channel(self):
+        return self._colour_channels["GREEN"]
+
+    @property
+    def blue_channel(self):
+        return self._colour_channels["BLUE"]
+
+    @property
+    def yellow_channel(self):
+        return self._colour_channels["YELLOW"]
+
+    @property
+    def grayscale_channel(self):
+        return self._colour_channels["GRAYSCALE"]
 
     @property
     def current_frame(self):
@@ -25,16 +55,11 @@ class ColourDetector:
 
     # listener for frames to be passed
     @current_frame.setter
-    def current_frame(self, frame):
+    def current_frame(self, frame=None):
         if not (frame is None):
             self._video_frame = frame
             self._process_frame()
         return
-
-    # public properties to return the private values
-    @property
-    def colour_channels(self):
-        return self._colour_channels.keys()
 
     def _process_frame(self) -> None:
         # self._video_frame is already an image so just need to copy and convert to colour channels
@@ -56,31 +81,28 @@ class ColourDetector:
         # set the result to the dictionary
         # bgr colour array = [blue, green, red]
 
-        lower_blue = numpy.array([100, 100, 100])
-        upper_blue = numpy.array([140, 255, 255])
-        blue_mask = cv2.inRange(hsv_image, lower_blue, upper_blue)
+
+        blue_mask = cv2.inRange(hsv_image, (100, 50, 50), (140, 255, 255))
         # bitwise_and takes 2 hsv_images as src1 and src2 incase one of them is invalid?
-        self._colour_channels["BLUE"] = [cv2.bitwise_and(hsv_image, hsv_image, mask=blue_mask), blue_mask]
+        self._colour_channels["BLUE"] = cv2.bitwise_and(hsv_image, hsv_image, mask=blue_mask)
 
-        lower_green = numpy.array([40, 100, 100])
-        upper_green = numpy.array([80, 255, 255])
-        green_mask = cv2.inRange(hsv_image, lower_green, upper_green)
-        self._colour_channels["GREEN"] = [cv2.bitwise_and(hsv_image, hsv_image, mask=green_mask), green_mask]
+        green_mask = cv2.inRange(hsv_image, (40, 50, 50), (80, 255, 255))
+        self._colour_channels["GREEN"] = cv2.bitwise_and(hsv_image, hsv_image, mask=green_mask)
 
-        lower_red1 = numpy.array([0, 100, 100])
-        upper_red1 = numpy.array([40, 255, 255])
-        lower_red_mask = cv2.inRange(hsv_image, lower_red1, upper_red1)
-        lower_red2 = numpy.array([160, 50, 0])
-        upper_red2 = numpy.array([179, 255, 255])
-        upper_red_mask = cv2.inRange(hsv_image, lower_red2, upper_red2)
+        lower_red_mask = cv2.inRange(hsv_image, (0, 50, 50), (20, 255, 255))
+        upper_red_mask = cv2.inRange(hsv_image, (160, 50, 50), (179, 255, 255))
         # in hsv, the red color loops around so need 2 masks for the start and end
         red_mask = lower_red_mask + upper_red_mask
-        self._colour_channels["RED"] = [cv2.bitwise_and(hsv_image, hsv_image, mask=red_mask), red_mask]
+        self._colour_channels["RED"] = cv2.bitwise_and(hsv_image, hsv_image, mask=red_mask)
+
+        yellow_mask = cv2.inRange(hsv_image, (20, 50, 50), (40, 255, 255))
+        self._colour_channels["YELLOW"] = cv2.bitwise_and(hsv_image, hsv_image, mask=yellow_mask)
 
         grayscale_image = cv2.cvtColor(self._video_frame, cv2.COLOR_BGR2GRAY)
-        self._colour_channels["GRAYSCALE"] = [grayscale_image, grayscale_image]
+        self._colour_channels["GRAYSCALE"] = grayscale_image
 
-        self._colour_channels["BASE"] = [hsv_image, hsv_image]
+        self._colour_channels["BASE"] = self._video_frame
+        self._colour_channels["HSV"] = hsv_image
 
     # public
     # the * makes it so that whenever the function is called, the parameter name has to be specified as well
@@ -89,18 +111,16 @@ class ColourDetector:
         if not (image is None):
             cv2.imshow("image", image)
         elif not (channel is None):
-            cv2.imshow(channel, self._colour_channels[channel][0])
-            cv2.imshow(channel + "mask", self._colour_channels[channel][1])
+            cv2.imshow(channel, self._colour_channels[channel])
         else:
-            cv2.imshow("base", self._colour_channels["BASE"][0])
-            cv2.imshow("red", self._colour_channels["RED"][0])
-            cv2.imshow("blue", self._colour_channels["BLUE"][0])
-            cv2.imshow("green", self._colour_channels["GREEN"][0])
-            #cv2.imshow("gray", self._colour_channels["GRAYSCALE"][0])
-
-            # print("no image or channel supplied")
-            # return
-
+            cv2.imshow("base", self._colour_channels["BASE"])
+            cv2.imshow("hsv", self._colour_channels["HSV"])
+            cv2.imshow("red", self._colour_channels["RED"])
+            cv2.imshow("blue", self._colour_channels["BLUE"])
+            cv2.imshow("green", self._colour_channels["GREEN"])
+            cv2.imshow("yellow", self._colour_channels["YELLOW"])
+            cv2.imshow("gray", self._colour_channels["GRAYSCALE"])
+        # waits 1 millisecond then nothing, makes it so that the image is updated every time this method is called
         cv2.waitKey(1)
 
     def end(self):

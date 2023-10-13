@@ -1,5 +1,3 @@
-import time
-import asyncio
 from colour_detector import ColourDetector
 from video import Video
 
