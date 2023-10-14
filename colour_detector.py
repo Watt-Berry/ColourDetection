@@ -84,19 +84,19 @@ class ColourDetector:
 
         blue_mask = cv2.inRange(hsv_image, (100, 50, 50), (140, 255, 255))
         # bitwise_and takes 2 hsv_images as src1 and src2 incase one of them is invalid?
-        self._colour_channels["BLUE"] = cv2.bitwise_and(hsv_image, hsv_image, mask=blue_mask)
+        self._colour_channels["BLUE"] = blue_mask #cv2.bitwise_and(hsv_image, hsv_image, mask=blue_mask)
 
         green_mask = cv2.inRange(hsv_image, (40, 50, 50), (80, 255, 255))
-        self._colour_channels["GREEN"] = cv2.bitwise_and(hsv_image, hsv_image, mask=green_mask)
+        self._colour_channels["GREEN"] = green_mask #cv2.bitwise_and(hsv_image, hsv_image, mask=green_mask)
 
         lower_red_mask = cv2.inRange(hsv_image, (0, 50, 50), (20, 255, 255))
         upper_red_mask = cv2.inRange(hsv_image, (160, 50, 50), (179, 255, 255))
         # in hsv, the red color loops around so need 2 masks for the start and end
         red_mask = lower_red_mask + upper_red_mask
-        self._colour_channels["RED"] = cv2.bitwise_and(hsv_image, hsv_image, mask=red_mask)
+        self._colour_channels["RED"] = red_mask #cv2.bitwise_and(hsv_image, hsv_image, mask=red_mask)
 
         yellow_mask = cv2.inRange(hsv_image, (20, 50, 50), (40, 255, 255))
-        self._colour_channels["YELLOW"] = cv2.bitwise_and(hsv_image, hsv_image, mask=yellow_mask)
+        self._colour_channels["YELLOW"] = yellow_mask #cv2.bitwise_and(hsv_image, hsv_image, mask=yellow_mask)
 
         grayscale_image = cv2.cvtColor(self._video_frame, cv2.COLOR_BGR2GRAY)
         self._colour_channels["GRAYSCALE"] = grayscale_image
