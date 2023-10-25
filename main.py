@@ -4,10 +4,13 @@ import cv2
 from colour_detector import ColourDetector
 from display import Display
 from kinect_video import KinectVideo
+from opencv_video import CVVideo
 
 def main():
     display = Display()
-    current_video = KinectVideo()
+    #current_video = KinectVideo()
+    current_video = CVVideo()
+    current_video.start()
     col_detector = ColourDetector()
 
     #blob_detector = BlobDetector()
@@ -31,7 +34,7 @@ def main():
         display.add_channel_to_show("yellow", col_detector.yellow_channel)
         display.add_channel_to_show("green", col_detector.green_channel)
         display.add_channel_to_show("kinectrgb", current_video.frame)
-        display.add_channel_to_show("kinectdepth", current_video.depth_frame)
+        #display.add_channel_to_show("kinectdepth", current_video.depth_frame)
 
     #def pass_blue_to_blob_detec():
     #    nonlocal col_detector
@@ -46,9 +49,12 @@ def main():
 
         display.display_images()
 
+        # checks every loop if the esc key is pressed: may need to hold down esc as the detection and press happen at
+        # different times
         if cv2.waitKey(1) & 0xff == 27: break
 
     display.end()
+    current_video.end()
     #blob_detector.end()
 
 
