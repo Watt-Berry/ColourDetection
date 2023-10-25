@@ -5,6 +5,11 @@ import numpy
 # TODO: add in option to calibrate colours somehow?
 
 
+# README:
+# colour detector takes 1 image as its input to current_frame
+# once its passed the image, it processes it and each colour channel can be accessed
+
+
 class ColourDetector:
     def __init__(self):
         # private video frame, should pass from the Video class

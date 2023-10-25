@@ -11,7 +11,7 @@ class Display:
         for name in self.channels.keys():
             cv2.imshow(name, self.channels[name])
             self.channels[name] = None
-
+        # waitKey(1) displays for 1 millisecond then gets updated by the next image passed to it
         cv2.waitKey(1)
 
     def end(self):
