@@ -54,6 +54,7 @@ class ColourDetector:
         return self._video_frame
 
     # listener for frames to be passed
+    # the images passed should be in BGR format
     @current_frame.setter
     def current_frame(self, frame=None):
         if not (frame is None):
@@ -114,12 +115,12 @@ class ColourDetector:
             cv2.imshow(channel, self._colour_channels[channel])
         else:
             cv2.imshow("base", self._colour_channels["BASE"])
-            cv2.imshow("hsv", self._colour_channels["HSV"])
+            #cv2.imshow("hsv", self._colour_channels["HSV"])
             cv2.imshow("red", self._colour_channels["RED"])
             cv2.imshow("blue", self._colour_channels["BLUE"])
             cv2.imshow("green", self._colour_channels["GREEN"])
             cv2.imshow("yellow", self._colour_channels["YELLOW"])
-            cv2.imshow("gray", self._colour_channels["GRAYSCALE"])
+            #cv2.imshow("gray", self._colour_channels["GRAYSCALE"])
         # waits 1 millisecond then nothing, makes it so that the image is updated every time this method is called
         cv2.waitKey(1)
 

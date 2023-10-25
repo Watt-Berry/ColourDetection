@@ -1,30 +1,40 @@
+import cv2
+
+from blob_detector import BlobDetector
 from colour_detector import ColourDetector
 from video import Video
-
+from kinect_video import KinectVideo
 
 def main():
     current_video = Video()
     current_video.start()
+    #current_video = KinectVideo()
+    #current_video.start()
     col_detector = ColourDetector()
+    blob_detector = BlobDetector()
+
+
     print(col_detector.colour_channels)
-    keep_looping = True
 
     def pass_image_to_color_detec():
         nonlocal current_video
         nonlocal col_detector
+        nonlocal blob_detector
         col_detector.current_frame = current_video.frame
+        blob_detector.current_frame = current_video.frame
+
 
     # use while loop to keep it active and looping
-    new_img = None
-    i = 0
-    while i < 2_000:
+    while True:
         pass_image_to_color_detec()
         col_detector.display_image()
+        blob_detector.display_image()
 
-        i += 1
+        if cv2.waitKey(1) & 0xff == 27: break
 
     current_video.end()
     col_detector.end()
+    blob_detector.end()
 
 
 if __name__ == '__main__':
