@@ -54,11 +54,12 @@ class ColourDetector:
         return self._video_frame
 
     # listener for frames to be passed
-    # the images passed should be in BGR format
+    # the images passed should be rgb, if any changes to the image format changed then change the cvtColor that happens
     @current_frame.setter
     def current_frame(self, frame=None):
         if not (frame is None):
-            self._video_frame = frame
+
+            self._video_frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
             self._process_frame()
         return
 
@@ -104,25 +105,3 @@ class ColourDetector:
 
         self._colour_channels["BASE"] = self._video_frame
         self._colour_channels["HSV"] = hsv_image
-
-    # public
-    # the * makes it so that whenever the function is called, the parameter name has to be specified as well
-    # allows for either image data to be passed to and rendered or a specific channel rendered
-    def display_image(self, *, image=None, channel=None):
-        if not (image is None):
-            cv2.imshow("image", image)
-        elif not (channel is None):
-            cv2.imshow(channel, self._colour_channels[channel])
-        else:
-            cv2.imshow("base", self._colour_channels["BASE"])
-            #cv2.imshow("hsv", self._colour_channels["HSV"])
-            cv2.imshow("red", self._colour_channels["RED"])
-            cv2.imshow("blue", self._colour_channels["BLUE"])
-            cv2.imshow("green", self._colour_channels["GREEN"])
-            cv2.imshow("yellow", self._colour_channels["YELLOW"])
-            #cv2.imshow("gray", self._colour_channels["GRAYSCALE"])
-        # waits 1 millisecond then nothing, makes it so that the image is updated every time this method is called
-        cv2.waitKey(1)
-
-    def end(self):
-        cv2.destroyAllWindows()
