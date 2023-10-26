@@ -30,7 +30,7 @@ def main():
         display.add_channel_to_show("red", col_detector.red_channel)
         display.add_channel_to_show("yellow", col_detector.yellow_channel)
         display.add_channel_to_show("green", col_detector.green_channel)
-        display.add_channel_to_show("kinectrgb", current_video.frame)
+        #display.add_channel_to_show("kinectrgb", current_video.frame)
         #display.add_channel_to_show("kinectdepth", current_video.depth_frame)
 
     # use while loop to keep it active and looping

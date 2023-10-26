@@ -1,4 +1,6 @@
 import cv2
+import numpy
+
 
 class Display:
     def __init__(self):
