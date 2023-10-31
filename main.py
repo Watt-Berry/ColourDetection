@@ -9,7 +9,7 @@ def main():
     # init new objects
     display = Display()
     #current_video = KinectVideo() #untested
-    current_video = CVVideo() #temporary, works with laptop camera
+    current_video = CVVideo(1280, 720) #temporary, works with laptop camera
     current_video.start()
     col_detector = ColourDetector()
 
@@ -36,7 +36,6 @@ def main():
     # use while loop to keep it active and looping
     # MAINLOOP of program
     while True:
-
         pass_image_to_color_detec()
         pass_frames_to_display()
 
