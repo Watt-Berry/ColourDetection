@@ -4,10 +4,8 @@ import numpy
 
 # TODO: add in option to calibrate colours somehow?
 
-
-# README:
-# colour detector takes 1 image as its input to current_frame
-# once its passed the image, it processes it and each colour channel can be accessed
+# README: colour detector takes 1 image as its input to current_frame
+# README: once its passed the image, it processes it and each colour channel can be accessed
 
 
 class ColourDetector:

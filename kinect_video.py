@@ -2,6 +2,7 @@
 import numpy
 import cv2
 
+# TODO: test if this is working in main, on the raspberry pi
 
 class KinectVideo:
 
