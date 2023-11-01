@@ -8,14 +8,14 @@ class BlobDetector:
         params = cv2.SimpleBlobDetector.Params()
 
         params.filterByColor = True
-        params.blobColor = 255
+        params.blobColor = 200
 
         params.minThreshold = 10
+        params.maxThreshold = 100
 
-        params.maxThreshold = 250
-
-        params.filterByArea = True
-        params.minArea = 10
+        params.filterByCircularity = True
+        params.minCircularity = 0.5
+        params.maxCircularity = 0.8
 
         self._detector = cv2.SimpleBlobDetector.create(params)
 

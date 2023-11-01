@@ -22,7 +22,7 @@ def main():
         nonlocal current_video
         nonlocal col_detector
         nonlocal blob_detector
-        col_detector.current_frame = current_video.frame
+        col_detector.process_image(current_video.frame)
         blob_detector.process_image(col_detector.hsv_channel, col_detector.blue_mask)
 
     # every frame, the frames from the colour detector should be passed to the display to display
