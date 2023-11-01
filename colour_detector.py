@@ -19,7 +19,10 @@ class ColourDetector:
                                  "RED": None, "GREEN": None, "BLUE": None, "YELLOW": None,
                                  "GRAYSCALE": None}
 
+        self._masks = {"RED": None, "BLUE": None, "GREEN": None, "YELLOW": None}
+
     # public properties to return the private values
+    # getter properties for the channels and masks
     @property
     def colour_channels(self):
         return self._colour_channels.keys()
@@ -51,6 +54,22 @@ class ColourDetector:
     @property
     def grayscale_channel(self):
         return self._colour_channels["GRAYSCALE"]
+
+    @property
+    def red_mask(self):
+        return self._masks["RED"]
+
+    @property
+    def green_mask(self):
+        return self._masks["GREEN"]
+
+    @property
+    def blue_mask(self):
+        return self._masks["BLUE"]
+
+    @property
+    def yellow_mask(self):
+        return self._masks["YELLOW"]
 
     @property
     def current_frame(self):
@@ -110,3 +129,9 @@ class ColourDetector:
 
         self._colour_channels["BASE"] = self._video_frame
         self._colour_channels["HSV"] = hsv_image
+
+
+        self._masks["BLUE"] = blue_mask
+        self._masks["GREEN"] = green_mask
+        self._masks["RED"] = red_mask
+        self._masks["YELLOW"] = yellow_mask

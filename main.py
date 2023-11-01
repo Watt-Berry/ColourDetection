@@ -4,6 +4,7 @@ from colour_detector import ColourDetector
 from display import Display
 from kinect_video import KinectVideo
 from opencv_video import CVVideo
+from blob_detector import BlobDetector
 
 def main():
     # init new objects
@@ -12,24 +13,30 @@ def main():
     current_video = CVVideo(1280, 720) #temporary, works with laptop camera
     current_video.start()
     col_detector = ColourDetector()
+    blob_detector = BlobDetector()
+
 
 
     # every frame, the frame from the current video should be passed to the colour detector
     def pass_image_to_color_detec():
         nonlocal current_video
         nonlocal col_detector
+        nonlocal blob_detector
         col_detector.current_frame = current_video.frame
+        blob_detector.frame = col_detector.hsv_channel
 
     # every frame, the frames from the colour detector should be passed to the display to display
     def pass_frames_to_display():
         nonlocal display
         nonlocal col_detector
         nonlocal current_video
+        nonlocal blob_detector
 
         display.add_channel_to_show("blue", col_detector.blue_channel)
         display.add_channel_to_show("red", col_detector.red_channel)
         display.add_channel_to_show("yellow", col_detector.yellow_channel)
         display.add_channel_to_show("green", col_detector.green_channel)
+        display.add_channel_to_show("blobs", blob_detector.frame)
         #display.add_channel_to_show("kinectrgb", current_video.frame)
         #display.add_channel_to_show("kinectdepth", current_video.depth_frame)
 
