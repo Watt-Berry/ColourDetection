@@ -23,7 +23,7 @@ def main():
         nonlocal col_detector
         nonlocal blob_detector
         col_detector.current_frame = current_video.frame
-        blob_detector.frame = col_detector.hsv_channel
+        blob_detector.process_image(col_detector.hsv_channel, col_detector.blue_mask)
 
     # every frame, the frames from the colour detector should be passed to the display to display
     def pass_frames_to_display():
@@ -32,11 +32,11 @@ def main():
         nonlocal current_video
         nonlocal blob_detector
 
-        display.add_channel_to_show("blue", col_detector.blue_channel)
-        display.add_channel_to_show("red", col_detector.red_channel)
-        display.add_channel_to_show("yellow", col_detector.yellow_channel)
-        display.add_channel_to_show("green", col_detector.green_channel)
-        display.add_channel_to_show("blobs", blob_detector.frame)
+        #display.add_channel_to_show("blue", col_detector.blue_channel)
+        #display.add_channel_to_show("red", col_detector.red_channel)
+        #display.add_channel_to_show("yellow", col_detector.yellow_channel)
+        #display.add_channel_to_show("green", col_detector.green_channel)
+        display.add_channel_to_show("blobs", blob_detector.blobs)
         #display.add_channel_to_show("kinectrgb", current_video.frame)
         #display.add_channel_to_show("kinectdepth", current_video.depth_frame)
 
