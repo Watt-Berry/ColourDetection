@@ -10,16 +10,16 @@ import numpy
 
 class ColourDetector:
     def __init__(self):
-        # private video frame, should pass from the Video class
-        self._video_frame = None
-
         # private
         # each value will have the result and the mask
         self._colour_channels = {"BASE": None, "HSV": None,
                                  "RED": None, "GREEN": None, "BLUE": None, "YELLOW": None,
                                  "GRAYSCALE": None}
 
+        self._masks = {"RED": None, "BLUE": None, "GREEN": None, "YELLOW": None}
+
     # public properties to return the private values
+    # getter properties for the channels and masks
     @property
     def colour_channels(self):
         return self._colour_channels.keys()
@@ -53,27 +53,27 @@ class ColourDetector:
         return self._colour_channels["GRAYSCALE"]
 
     @property
-    def current_frame(self):
-        return self._video_frame
+    def red_mask(self):
+        return self._masks["RED"]
 
-    # listener for frames to be passed
-    # the images passed should be rgb, if any changes to the image format changed then change the cvtColor that happens
-    @current_frame.setter
-    def current_frame(self, frame=None):
-        if not (frame is None):
+    @property
+    def green_mask(self):
+        return self._masks["GREEN"]
 
-            # make sure that bgr images are passed, if rgb is passed then it will cause some issues with the
-            # red and blue channels being switched
-            self._video_frame = frame
-            self._process_frame()
-        return
+    @property
+    def blue_mask(self):
+        return self._masks["BLUE"]
 
-    def _process_frame(self) -> None:
+    @property
+    def yellow_mask(self):
+        return self._masks["YELLOW"]
+
+    def process_image(self, image) -> None:
         # self._video_frame is already an image so just need to copy and convert to colour channels
         # don't need to imread the frame as it's already an image
 
         # convert the image to hsv
-        hsv_image = cv2.cvtColor(self._video_frame, cv2.COLOR_BGR2HSV)
+        hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
         # for each colour:
         # get the bound for each colour by converting rgb values to hsv
@@ -105,8 +105,13 @@ class ColourDetector:
         yellow_mask = cv2.inRange(hsv_image, (20, 50, 50), (40, 255, 255))
         self._colour_channels["YELLOW"] = cv2.cvtColor(cv2.bitwise_and(hsv_image, hsv_image, mask=yellow_mask), cv2.COLOR_HSV2BGR)
 
-        grayscale_image = cv2.cvtColor(self._video_frame, cv2.COLOR_BGR2GRAY)
+        grayscale_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         self._colour_channels["GRAYSCALE"] = grayscale_image
 
-        self._colour_channels["BASE"] = self._video_frame
+        self._colour_channels["BASE"] = image
         self._colour_channels["HSV"] = hsv_image
+
+        self._masks["BLUE"] = blue_mask
+        self._masks["GREEN"] = green_mask
+        self._masks["RED"] = red_mask
+        self._masks["YELLOW"] = yellow_mask

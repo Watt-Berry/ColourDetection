@@ -4,39 +4,48 @@ from colour_detector import ColourDetector
 from display import Display
 from kinect_video import KinectVideo
 from opencv_video import CVVideo
+from blob_detector import BlobDetector
 
 def main():
     # init new objects
     display = Display()
     #current_video = KinectVideo() #untested
     current_video = CVVideo(1280, 720) #temporary, works with laptop camera
-    current_video.start()
     col_detector = ColourDetector()
+    blob_detector = BlobDetector()
+
 
 
     # every frame, the frame from the current video should be passed to the colour detector
-    def pass_image_to_color_detec():
+    # every frame, pass the video frame to the colour detector then to the blob detector
+    def pass_frame_to_detectors():
         nonlocal current_video
-        nonlocal col_detector
-        col_detector.current_frame = current_video.frame
+        nonlocal col_detector, blob_detector
+        col_detector.process_image(current_video.frame)
+        blob_detector.process_image(col_detector.hsv_channel, col_detector.blue_mask)
 
     # every frame, the frames from the colour detector should be passed to the display to display
     def pass_frames_to_display():
         nonlocal display
         nonlocal col_detector
         nonlocal current_video
+        nonlocal blob_detector
 
-        display.add_channel_to_show("blue", col_detector.blue_channel)
-        display.add_channel_to_show("red", col_detector.red_channel)
-        display.add_channel_to_show("yellow", col_detector.yellow_channel)
-        display.add_channel_to_show("green", col_detector.green_channel)
+        #display.add_channel_to_show("blue", col_detector.blue_channel)
+        #display.add_channel_to_show("red", col_detector.red_channel)
+        #display.add_channel_to_show("yellow", col_detector.yellow_channel)
+        #display.add_channel_to_show("green", col_detector.green_channel)
+        display.add_channel_to_show("blobs", blob_detector.blobs)
         #display.add_channel_to_show("kinectrgb", current_video.frame)
         #display.add_channel_to_show("kinectdepth", current_video.depth_frame)
+
+    # start the video capture
+    current_video.start()
 
     # use while loop to keep it active and looping
     # MAINLOOP of program
     while True:
-        pass_image_to_color_detec()
+        pass_frame_to_detectors()
         pass_frames_to_display()
 
         # display the frames passed to it
