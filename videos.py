@@ -31,19 +31,24 @@ class CVVideo:
 
 
 
-#from freenect import sync_get_depth as get_depth, sync_get_video as get_video
+from freenect import sync_get_depth as get_depth, sync_get_video as get_video, stop_sync
 # TODO: test if this is working in main, on the raspberry pi
 
 class KinectVideo:
 
     @property
     def frame(self):
-        #(rgb, _) = get_video()
-        #return cv2.imread(rgb)
-        return None
+        (rgb, _) = get_video()
+        return cv2.imread(rgb)
 
     @property
     def depth_frame(self):
-        #(depth, _) = get_depth()
-        #return cv2.imread(depth)
-        return None
+        (depth, _) = get_depth()
+        return cv2.imread(depth)
+
+    # TODO: add method to find distance to point based on depth frame
+    def get_distance(self, point):
+        pass
+
+    def end(self):
+        stop_sync()
